@@ -1,35 +1,59 @@
 basePath: /api/v1
 definitions:
-  github_com_ahmetcanc_notify-one_internal_domain.Notification:
+  domain.Notification:
     properties:
       batch_id:
+        example: 722e8400-e29b-41d4-a716-446655440000
         type: string
       channel:
-        $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationChannel'
+        allOf:
+        - $ref: '#/definitions/domain.NotificationChannel'
+        enum:
+        - sms
+        - email
+        - push
+        example: sms
       content:
+        example: "Successful launch! \U0001F680"
         type: string
       created_at:
+        example: "2026-03-06T02:50:00Z"
         type: string
       id:
+        example: 550e8400-e29b-41d4-a716-446655440000
         type: string
       idempotency_key:
+        example: unique-key-123
         type: string
       next_retry_at:
+        example: "2026-03-06T03:00:00Z"
         type: string
       priority:
-        $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationPriority'
+        allOf:
+        - $ref: '#/definitions/domain.NotificationPriority'
+        enum:
+        - low
+        - normal
+        - high
+        example: high
       recipient:
+        example: "+905554443322"
         type: string
       retry_count:
+        example: 0
         type: integer
       scheduled_at:
+        example: "2026-03-06T10:00:00Z"
         type: string
       status:
-        $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationStatus'
+        allOf:
+        - $ref: '#/definitions/domain.NotificationStatus'
+        example: pending
       updated_at:
+        example: "2026-03-06T02:50:00Z"
         type: string
     type: object
-  github_com_ahmetcanc_notify-one_internal_domain.NotificationChannel:
+  domain.NotificationChannel:
     enum:
     - sms
     - email
@@ -39,7 +63,7 @@ definitions:
     - ChannelSMS
     - ChannelEmail
     - ChannelPush
-  github_com_ahmetcanc_notify-one_internal_domain.NotificationPriority:
+  domain.NotificationPriority:
     enum:
     - low
     - normal
@@ -49,7 +73,7 @@ definitions:
     - PriorityLow
     - PriorityNormal
     - PriorityHigh
-  github_com_ahmetcanc_notify-one_internal_domain.NotificationStatus:
+  domain.NotificationStatus:
     enum:
     - pending
     - processing
@@ -113,7 +137,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification'
+              $ref: '#/definitions/domain.Notification'
             type: array
       summary: List notifications
       tags:
@@ -128,7 +152,7 @@ paths:
         name: notification
         required: true
         schema:
-          $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification'
+          $ref: '#/definitions/domain.Notification'
       produces:
       - application/json
       responses:
@@ -153,7 +177,7 @@ paths:
         required: true
         schema:
           items:
-            $ref: '#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification'
+            $ref: '#/definitions/domain.Notification'
           type: array
       produces:
       - application/json

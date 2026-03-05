@@ -75,7 +75,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification"
+                                "$ref": "#/definitions/domain.Notification"
                             }
                         }
                     }
@@ -100,7 +100,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification"
+                            "$ref": "#/definitions/domain.Notification"
                         }
                     }
                 ],
@@ -139,7 +139,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.Notification"
+                                "$ref": "#/definitions/domain.Notification"
                             }
                         }
                     }
@@ -180,51 +180,86 @@
         }
     },
     "definitions": {
-        "github_com_ahmetcanc_notify-one_internal_domain.Notification": {
+        "domain.Notification": {
             "type": "object",
             "properties": {
                 "batch_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "722e8400-e29b-41d4-a716-446655440000"
                 },
                 "channel": {
-                    "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationChannel"
+                    "enum": [
+                        "sms",
+                        "email",
+                        "push"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NotificationChannel"
+                        }
+                    ],
+                    "example": "sms"
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Successful launch! 🚀"
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-06T02:50:00Z"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "idempotency_key": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "unique-key-123"
                 },
                 "next_retry_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-06T03:00:00Z"
                 },
                 "priority": {
-                    "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationPriority"
+                    "enum": [
+                        "low",
+                        "normal",
+                        "high"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NotificationPriority"
+                        }
+                    ],
+                    "example": "high"
                 },
                 "recipient": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "+905554443322"
                 },
                 "retry_count": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "scheduled_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-06T10:00:00Z"
                 },
                 "status": {
-                    "$ref": "#/definitions/github_com_ahmetcanc_notify-one_internal_domain.NotificationStatus"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NotificationStatus"
+                        }
+                    ],
+                    "example": "pending"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-06T02:50:00Z"
                 }
             }
         },
-        "github_com_ahmetcanc_notify-one_internal_domain.NotificationChannel": {
+        "domain.NotificationChannel": {
             "type": "string",
             "enum": [
                 "sms",
@@ -237,7 +272,7 @@
                 "ChannelPush"
             ]
         },
-        "github_com_ahmetcanc_notify-one_internal_domain.NotificationPriority": {
+        "domain.NotificationPriority": {
             "type": "string",
             "enum": [
                 "low",
@@ -250,7 +285,7 @@
                 "PriorityHigh"
             ]
         },
-        "github_com_ahmetcanc_notify-one_internal_domain.NotificationStatus": {
+        "domain.NotificationStatus": {
             "type": "string",
             "enum": [
                 "pending",
