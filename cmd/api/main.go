@@ -8,13 +8,22 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ahmetcanc/notify-one/api"
+	_ "github.com/ahmetcanc/notify-one/docs"
+	"github.com/ahmetcanc/notify-one/internal/api"
 	"github.com/ahmetcanc/notify-one/internal/infrastructure/cache"
 	"github.com/ahmetcanc/notify-one/internal/infrastructure/config"
 	"github.com/ahmetcanc/notify-one/internal/infrastructure/database"
 	"github.com/ahmetcanc/notify-one/internal/usecase"
 	"github.com/ahmetcanc/notify-one/migrations"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// @title           NotifyOne API
+// @version         1.0
+// @description     High-performance, scalable notification service.
+// @contact.name    Ahmet Can Ceylan
+// @host            localhost:3333
+// @BasePath        /api/v1
 
 func main() {
 	cfg := config.LoadConfig()
@@ -52,11 +61,19 @@ func main() {
 	notificationUsecase := usecase.NewNotificationUsecase(notificationRepo, rdb)
 
 	notificationHandler := api.NewNotificationHandler(notificationUsecase)
+
 	// Routes
+	http.Handle("/swagger/", httpSwagger.WrapHandler)
+
 	http.HandleFunc("POST /api/v1/notifications", notificationHandler.Send)
 	http.HandleFunc("POST /api/v1/notifications/batch", notificationHandler.SendBatch)
 
-	// Health check endpoint
+	// Management & Observability Endpoints
+	http.HandleFunc("GET /api/v1/notifications", notificationHandler.List)
+	http.HandleFunc("PATCH /api/v1/notifications/batch/{batchId}/cancel", notificationHandler.Cancel)
+	http.HandleFunc("GET /api/v1/metrics", notificationHandler.Metrics) // <-- Bu satırı ekledik
+
+	// Health check
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
