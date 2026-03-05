@@ -38,4 +38,17 @@ type Notification struct {
 	ScheduledAt    *time.Time           `json:"scheduled_at,omitempty"`
 	CreatedAt      time.Time            `json:"created_at"`
 	UpdatedAt      time.Time            `json:"updated_at"`
+	RetryCount     int                  `json:"retry_count"`
+	NextRetryAt    time.Time            `json:"next_retry_at"`
+}
+
+type NotificationFilter struct {
+	Status    string
+	Channel   string
+	Priority  string
+	BatchID   *string
+	StartDate *time.Time
+	EndDate   *time.Time
+	Limit     int
+	Offset    int
 }
