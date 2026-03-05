@@ -215,5 +215,11 @@ docker exec -it notify_redis redis-cli
 
 ---
 
+### 🚀 API Production Test
+![Swagger Test Success](assets/swagger-req.png)
+*Above: Successful notification delivery (202 Accepted) via Swagger UI.*
+
+---
+
 ## 👤 Author
 Ahmet Can Ceylan - [canceylan.dev](https://canceylan.dev)
