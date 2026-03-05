@@ -1,4 +1,3 @@
-// ...existing code...
 package main
 
 import (
@@ -71,7 +70,7 @@ func main() {
 	// Management & Observability Endpoints
 	http.HandleFunc("GET /api/v1/notifications", notificationHandler.List)
 	http.HandleFunc("PATCH /api/v1/notifications/batch/{batchId}/cancel", notificationHandler.Cancel)
-	http.HandleFunc("GET /api/v1/metrics", notificationHandler.Metrics) // <-- Bu satırı ekledik
+	http.HandleFunc("GET /api/v1/metrics", notificationHandler.Metrics)
 
 	// Health check
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

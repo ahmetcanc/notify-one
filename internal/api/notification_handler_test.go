@@ -43,7 +43,7 @@ func TestNotificationHandler_Send(t *testing.T) {
 		payload := map[string]interface{}{
 			"recipient": "+905554443322",
 			"channel":   "sms",
-			"content":   "Handler Test Mesajı",
+			"content":   "Handler Test Message",
 			"priority":  "high",
 		}
 		body, _ := json.Marshal(payload)
@@ -54,7 +54,7 @@ func TestNotificationHandler_Send(t *testing.T) {
 		h.Send(w, req)
 
 		if w.Code != http.StatusAccepted {
-			t.Errorf("Beklenen: 202, Gelen: %d", w.Code)
+			t.Errorf("Want: 202, Got: %d", w.Code)
 		}
 	})
 }
@@ -69,7 +69,7 @@ func TestNotificationHandler_List(t *testing.T) {
 		h.List(w, req)
 
 		if w.Code != http.StatusOK {
-			t.Errorf("Beklenen: 200, Gelen: %d", w.Code)
+			t.Errorf("Want: 200, Got: %d", w.Code)
 		}
 	})
 }
@@ -84,7 +84,7 @@ func TestNotificationHandler_Cancel_Fail(t *testing.T) {
 		h.Cancel(w, req)
 
 		if w.Code != http.StatusBadRequest {
-			t.Errorf("Beklenen: 400, Gelen: %d", w.Code)
+			t.Errorf("Want: 400, Got: %d", w.Code)
 		}
 	})
 }

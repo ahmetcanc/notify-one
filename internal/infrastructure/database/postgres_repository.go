@@ -69,7 +69,7 @@ func (r *PostgresNotificationRepository) GetByIdempotencyKey(ctx context.Context
 
 	err := r.db.QueryRow(ctx, query, key).Scan(&n.ID, &n.Recipient, &n.Channel, &n.Status)
 	if err != nil {
-		return nil, err // pgx.ErrNoRows durumunda üst katman bunu yönetir
+		return nil, err
 	}
 	return &n, nil
 }

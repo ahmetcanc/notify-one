@@ -86,7 +86,7 @@ func TestExecute_Success(t *testing.T) {
 func TestExecute_ValidationError(t *testing.T) {
 	uc := NewNotificationUsecase(&MockRepository{}, &MockQueue{})
 
-	n := &domain.Notification{Content: "Mesaj", Priority: domain.PriorityNormal}
+	n := &domain.Notification{Content: "Message", Priority: domain.PriorityNormal}
 
 	err := uc.Execute(context.Background(), n)
 
@@ -111,6 +111,6 @@ func TestExecuteBatch_LimitError(t *testing.T) {
 	_, err := uc.ExecuteBatch(context.Background(), oversizedBatch)
 
 	if err == nil {
-		t.Error("1000 limitini aşan batch için hata bekleniyordu ama alınmadı")
+		t.Error("Waited limit error, but got nil")
 	}
 }

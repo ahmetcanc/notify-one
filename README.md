@@ -161,6 +161,7 @@ goose -dir migrations create <migration_name> sql
 ├── cmd/
 │   ├── api/              # API entry point (main.go)
 │   └── worker/           # Background worker entry point
+├── docs                  # Swagger Docs
 ├── internal/
     ├── api               # HTTP Handlers (Encapsulated)
 │   ├── domain/           # Business logic & entities
