@@ -46,14 +46,15 @@ func main() {
 
 	// Initialize Repositories
 	notificationRepo := database.NewPostgresNotificationRepository(dbPool)
-
 	// Logger for check
 	log.Printf("Repository initialized: %T", notificationRepo)
 
-	notificationHandler := api.NewNotificationHandler(usecase.NewNotificationUsecase(notificationRepo))
+	notificationUsecase := usecase.NewNotificationUsecase(notificationRepo, rdb)
 
+	notificationHandler := api.NewNotificationHandler(notificationUsecase)
 	// Routes
 	http.HandleFunc("POST /api/v1/notifications", notificationHandler.Send)
+	http.HandleFunc("POST /api/v1/notifications/batch", notificationHandler.SendBatch)
 
 	// Health check endpoint
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

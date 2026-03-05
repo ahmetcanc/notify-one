@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/ahmetcanc/notify-one/internal/domain"
@@ -36,4 +37,23 @@ func (h *NotificationHandler) Send(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(map[string]string{"id": n.ID.String(), "status": string(n.Status)})
+}
+
+// SendBatch handles multiple notification requests in a single call
+func (h *NotificationHandler) SendBatch(w http.ResponseWriter, r *http.Request) {
+	var ns []domain.Notification
+
+	if err := json.NewDecoder(r.Body).Decode(&ns); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.usecase.ExecuteBatch(r.Context(), ns); err != nil {
+		http.Error(w, "failed to process batch", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(map[string]string{"message": "batch processed", "count": fmt.Sprintf("%d", len(ns))})
 }
