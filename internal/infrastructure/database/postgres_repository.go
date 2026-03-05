@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ahmetcanc/notify-one/internal/domain"
 	"github.com/google/uuid"
@@ -30,21 +31,29 @@ func (r *PostgresNotificationRepository) Create(ctx context.Context, n *domain.N
 }
 
 // GetByID retrieves a notification record
-func (r *PostgresNotificationRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Notification, error) {
-	n := &domain.Notification{}
-	query := `SELECT id, batch_id, recipient, channel, content, priority, status, idempotency_key, created_at, updated_at FROM notifications WHERE id = $1`
+func (r *PostgresNotificationRepository) GetByID(ctx context.Context, id string) (*domain.Notification, error) {
+	var n domain.Notification
 
-	err := r.db.QueryRow(ctx, query, id).Scan(
-		&n.ID, &n.BatchID, &n.Recipient, &n.Channel, &n.Content, &n.Priority, &n.Status, &n.IdempotencyKey, &n.CreatedAt, &n.UpdatedAt,
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid uuid format: %w", err)
+	}
+
+	query := `SELECT id, recipient, channel, content, status, priority, created_at, updated_at 
+			  FROM notifications WHERE id = $1`
+
+	err = r.db.QueryRow(ctx, query, parsedID).Scan(
+		&n.ID, &n.Recipient, &n.Channel, &n.Content, &n.Status, &n.Priority, &n.CreatedAt, &n.UpdatedAt,
 	)
+
 	if err != nil {
 		return nil, err
 	}
-	return n, nil
+	return &n, nil
 }
 
 // UpdateStatus updates the status of a specific notification
-func (r *PostgresNotificationRepository) UpdateStatus(ctx context.Context, id uuid.UUID, status domain.NotificationStatus) error {
+func (r *PostgresNotificationRepository) UpdateStatus(ctx context.Context, id string, status domain.NotificationStatus) error {
 	query := `UPDATE notifications SET status = $1, updated_at = NOW() WHERE id = $2`
 	_, err := r.db.Exec(ctx, query, status, id)
 	return err

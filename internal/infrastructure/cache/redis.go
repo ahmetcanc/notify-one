@@ -15,20 +15,37 @@ type Config struct {
 	DB       int
 }
 
-// NewRedisConnection initializes a new Redis client with the given configuration
-func NewRedisConnection(ctx context.Context, cfg Config) (*redis.Client, error) {
+type RedisCache struct {
+	client *redis.Client
+}
+
+// NewRedisConnection initializes a new Redis wrapper
+func NewRedisConnection(ctx context.Context, cfg Config) (*RedisCache, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password: cfg.Password,
 		DB:       cfg.DB,
 	})
 
-	// Test the connection
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Printf("failed to connect to redis: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to redis: %w", err)
 	}
 
 	log.Println("redis connection established successfully")
-	return rdb, nil
+	return &RedisCache{client: rdb}, nil
+}
+
+// PushToQueue adds notification ID to a Redis list
+func (r *RedisCache) PushToQueue(ctx context.Context, notificationID string) error {
+	return r.client.LPush(ctx, "notification_queue", notificationID).Err()
+}
+
+func (r *RedisCache) Close() error {
+	return r.client.Close()
+}
+
+// PopFromQueue blocks until a notification ID is available in the queue
+func (r *RedisCache) PopFromQueue(ctx context.Context, queueName string) ([]string, error) {
+	// 0 means wait indefinitely
+	return r.client.BLPop(ctx, 0, queueName).Result()
 }
