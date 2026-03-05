@@ -7,8 +7,8 @@ Designed to handle **single and batch notifications** using **PostgreSQL** and *
 
 # 🛠 Tech Stack
 
-* **Language:** Go 1.23+
-* **Database:** PostgreSQL 15 (`pgx` pool)
+* **Language:** Go 1.25+
+* **Database:** PostgreSQL 16 (`pgx` pool)
 * **Cache:** Redis 7
 * **Migrations:** Goose
 * **Infrastructure:** Docker & Docker Compose
@@ -20,18 +20,19 @@ Designed to handle **single and batch notifications** using **PostgreSQL** and *
 ## 1️⃣ Environment Setup
 
 Create a `.env` file in the project root:
+`cp .env.example .env`
 
 ```bash
 APP_PORT=3333
 
-DB_HOST=localhost
-DB_PORT=5555
+DB_HOST=postgres
+DB_PORT=5432
 DB_USER=user
 DB_PASSWORD=password
 DB_NAME=notifydb
 DB_SSLMODE=disable
 
-REDIS_HOST=localhost
+REDIS_HOST=redis
 REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=0
@@ -39,22 +40,25 @@ REDIS_DB=0
 
 ---
 
-## 2️⃣ Start Infrastructure
+## 2️⃣ Launch the Project
 
-Launch PostgreSQL and Redis containers:
-
+Build and start all services (API, Worker, DB, Redis):
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
 ---
 
-## 3️⃣ Run the Application
+## 3️⃣ Management & Cleanup
 
-The application automatically runs database migrations on startup using **embed.FS**.
-
+Stop services:
 ```bash
-go run cmd/api/main.go
+docker compose down
+```
+
+Full reset (including volumes):
+```bash
+docker compose down -v && docker compose up --build
 ```
 
 ---
@@ -63,9 +67,9 @@ go run cmd/api/main.go
 
 | Endpoint                      | Method | Description                        | Status     |
 | ----------------------------- | ------ | ---------------------------------- | ---------- |
-| `/health`                     | GET    | System health & connectivity check | ✅ Ready    |
-| `/api/v1/notifications`       | POST   | Send single notification           | 🏗 Pending |
-| `/api/v1/notifications/batch` | POST   | Send batch notifications           | 🏗 Pending |
+| `/health`                     | GET    | System health & connectivity check | ✅ Ready   |
+| `/api/v1/notifications`       | POST   | Send single notification (async)   | ✅ Ready   |
+| `/api/v1/notifications/batch` | POST   | Send batch notifications (async)   | ✅ Ready   |
 
 ---
 
@@ -85,6 +89,7 @@ go run cmd/api/main.go
 │   ├── logger/           # Structured logging implementation
 │   └── metrics/          # Prometheus or custom metrics
 ├── docker-compose.yml    # Infrastructure orchestration
+└── Dockerfile            # Multi-stage build for Go
 ├── .env                  # Environment variables
 └── Readme.md             # Project documentation
 ```
@@ -115,3 +120,12 @@ The system uses custom **PostgreSQL ENUM types** for strict validation.
 * `normal`
 * `high`
 
+### Useful Commands
+To access the postgreSQL database via terminal:
+```bash
+docker exec -it notify_postgres psql -U user -d notifydb
+
+```
+To access the Redis database via terminal:
+```bash
+docker exec -it notify_redis redis-cli
